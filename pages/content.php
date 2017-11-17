@@ -58,7 +58,19 @@
     <section class="content">
 
       <?php 
-        if($page == '' || $page == 'dashboard'){
+        if($page == 'siswa'){
+          include 'pages/siswa/list.php';
+        }else if($page == 'mapel'){
+          include 'pages/mapel/list.php';
+        }else if($page == 'kelas'){
+          include 'pages/kelas/list.php';
+        }else if($page == 'akun'){
+          include 'pages/akun/list.php';
+        }else if($page == 'mapel-kelas'){
+          include 'pages/mapel_per_kelas/list.php';
+        }else if($page == 'nilai'){
+          include 'pages/siswa/nilai.php';
+        }else if($page == '' || $page == 'dashboard'){
           include 'pages/dashboard.php';
         }else{
           echo 'not found'; 

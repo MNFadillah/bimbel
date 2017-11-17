@@ -18,8 +18,24 @@
 			$user->logout();
 			include 'pages/login.php';
 		}else{
-			if($page == '' || $page == 'dashboard'){
+			if($page == 'siswa'){
+				$menu = 'siswa';
+			}else if($page == 'mapel'){
+				$menu = 'mapel';
+			}else if($page == 'kelas'){
+				$menu = 'kelas';
+			}else if($page == 'nilai'){
+				$menu = 'nilai';
+			}else if($page == 'akun'){
+				$menu = 'akun';
+			}else if($page == 'mapel-kelas'){
+				$menu = 'mapel-kelas';
+			}else if($page == 'nilai'){
+				$menu = 'nilai';
+			}else if($page == '' || $page == 'dashboard'){
 				$menu = 'dashboard';
+			}else{
+
 			}
 			include 'pages/content.php';
 		}
