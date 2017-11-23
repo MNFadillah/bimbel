@@ -17,6 +17,14 @@
 		if($action == 'logout'){
 			$user->logout();
 			include 'pages/login.php';
+		}else if($action == 'print'){
+			if($page == 'nilai'){
+				include 'pages/siswa/cetak.php';
+			}
+		}else if($action == 'print_all'){
+			if($page == 'nilai'){
+				include 'pages/siswa/cetak-All.php';
+			}
 		}else{
 			if($page == 'siswa'){
 				$menu = 'siswa';
