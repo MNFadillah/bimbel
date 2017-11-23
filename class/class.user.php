@@ -104,14 +104,15 @@
 		public function edit($id, $email, $password)
 		{
 			try {
-				$stmt = $this->db->prepare("UPDATE user_account set email = :email, password = md5(:password) WHERE id = :id");
+				$stmt = $this->db->prepare("UPDATE user_account set email = :email, password = :password WHERE id = :id");
 				$stmt->bindparam(':email', $email);
 				$stmt->bindparam(':password', $password);
 				$stmt->bindparam(':id', $id);
 				$stmt->execute();
 				return true;
 			} catch (PDOException $e) {
-				echo $e->getMessage();
+				// echo $e->getMessage();
+				die();
 				return false;
 			}
 		}

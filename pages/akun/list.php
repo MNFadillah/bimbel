@@ -23,28 +23,29 @@
       $aksi = 'add';
     }
   }
-/*  if(isset($_POST['btnCari'])){
-    $email = htmlentities($_POST['email']);
-    $dataSearch = $siswa->getDataByNama($email);
-    if($dataSearch != null){
-      foreach ($dataSearch as $key => $value) {
-        $cariOutput .= "<tr>";
-        $cariOutput .= "<td>$value[id]</td>";
-        $cariOutput .= "<td>$value[email]</td>";
-        $cariOutput .= "<td>$value[password]</td>";
-        $cariOutput .= "<td>$value[created_at]</td>";
-        $cariOutput .= "</tr>";
-      }
-    }else{
-      $cariOutput = "<tr><td colspan='4' align='center'><h3>Tidak ditemukan</h3></td></tr>";
-    }
-  }
-*/
+
   if(isset($_POST['btnEdit'])){
     $id = htmlentities($_POST['id']);
     $email= htmlentities($_POST['email']);
-    $password = htmlentities($_POST['password']);
-    $user->edit($id, $email, $password);
+    $old_password = md5(htmlentities($_POST['old_password']));
+    $new_password = md5(htmlentities($_POST['new_password']));
+    $userData = $user->getDataById($id);
+    // echo $userData["password"];
+    if($userData["password"] == $old_password){
+      $editStatus = $user->edit($id, $email, $new_password);
+      if($editStatus){
+        $sukses = true;
+        $aksi = 'edit';
+      }else{
+        $sukses = false;
+        $aksi = 'edit';
+      }
+    }else{
+      echo "<script>alert('password lama tidak sesuai');</script>";
+      $sukses = false;
+      $aksi = 'edit';
+    }
+
   }
 ?>
 <section class="content">
@@ -65,6 +66,13 @@
                   <h4><i class="icon fa fa-check"></i> Berhasil!</h4>
                   Berhasil menghapus data user
                 </div>';
+        }else if($aksi === 'edit'){
+            echo '
+                <div class="alert alert-success alert-dismissible">
+                  <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                  <h4><i class="icon fa fa-check"></i> Berhasil!</h4>
+                  Berhasil mengubah data user
+                </div>';
         }
       }else if($sukses === false && $aksi === 'add'){
         echo '
@@ -72,6 +80,14 @@
           <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
           <h4><i class="icon fa fa-ban"></i> Gagal!</h4>
           Gagal menambahkan data user, ' . $user->errorText . '
+        </div>
+        ';
+      }else if($sukses === false && $aksi === 'edit'){
+        echo '
+        <div class="alert alert-danger alert-dismissible">
+          <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+          <h4><i class="icon fa fa-ban"></i> Gagal!</h4>
+          Gagal mengedit akun
         </div>
         ';
       }
@@ -107,7 +123,7 @@
             <div class="form-group">
               <label  for="inputPassword" class="control-label col-md-3">Password</label>
               <div class="col-md-8">
-                <input type="password" name="password" class="form-control" id="inputPasword" required placeholder="Masukkan Email">
+                <input type="password" name="password" class="form-control" id="inputPasword" required placeholder="Masukkan Password">
               </div>
             </div>
           </div>
@@ -130,7 +146,7 @@
     <div class="col-xs-12">
       <div class="box box-success">
         <div class="box-header">
-          <h3 class="box-title">Data Siswa</h3>
+          <h3 class="box-title">Data Akun</h3>
         </div>
         <!-- /.box-header -->
         <div class="box-body">
@@ -163,7 +179,7 @@
         <h3>Edit Akun</h3>
       </div>
       <div class="modal-body">
-          <form class="form-horizontal" action="" id="formEdit" method="post">
+          <form class="form-horizontal" action="" id="formEdit" method="post" onsubmit="return validateForm()">
               <input type="hidden" name="id" class="form-control" id="idEdit" placeholder="Enter ID">
               <div class="form-group">
                 <label  for="inputEmailEdit" class="control-label col-md-3">Email</label>
@@ -172,9 +188,21 @@
                 </div>
               </div>
               <div class="form-group">
-                <label  for="inputPasswordEdit" class="control-label col-md-3">Password</label>
+                <label  for="inputPasswordEdit" class="control-label col-md-3">Password Lama</label>
                 <div class="col-md-8">
-                  <input type="password" name="password" class="form-control" id="inputPasswordEdit" required placeholder="Masukkan Password">
+                  <input type="password" name="old_password" class="form-control" id="inputPasswordOldEdit" required placeholder="Masukkan Password">
+                </div>
+              </div>
+              <div class="form-group">
+                <label  for="inputPasswordEdit" class="control-label col-md-3">Password Baru</label>
+                <div class="col-md-8">
+                  <input type="password" name="new_password" class="form-control" id="inputPasswordNewEdit" required placeholder="Masukkan Password">
+                </div>
+              </div>
+              <div class="form-group">
+                <label  for="inputPasswordEdit" class="control-label col-md-3">Password Konfirmasi</label>
+                <div class="col-md-8">
+                  <input type="password" name="konfirmasi_password" class="form-control" id="inputPasswordKonfirmasiEdit" required placeholder="Masukkan Password">
                 </div>
               </div>
               <div class="form-group"> 
@@ -192,3 +220,26 @@
 
   </div>
 </div>
+
+<script type="text/javascript">
+  $('.openDialog').click(
+  function (evt) {
+    var id = $(this).attr("data-id");
+    var email = $(this).closest('tr').children('td.email').text();
+    // var alamat = $(this).closest('tr').children('td.alamat').text();
+    
+    $("input#idEdit").val( id );
+    $("#inputEmailEdit").val( email );
+  });
+
+  function validateForm() {
+    var passwordNew = $('#inputPasswordNewEdit').val();
+    var passwordKonfirmasi = $('#inputPasswordKonfirmasiEdit').val();
+    if(passwordNew === passwordKonfirmasi){
+      return true;
+    }else{
+      alert("maaf password baru tidak sesuai dengan password konfirmasi");
+      return false;
+    }
+  }
+</script>
