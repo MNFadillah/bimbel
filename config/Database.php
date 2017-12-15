@@ -10,7 +10,7 @@ Class Database{
 			$this->conn = new PDO($this->dsn, $this->user, $this->pass);
 			$this->conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 		}catch(PDOException $ex){
-			echo 'connection failed' . $ex->getMessage();
+			die('connection failed' . $ex->getMessage());
 		}
 
 		return $this->conn;

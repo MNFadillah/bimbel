@@ -16,14 +16,14 @@
 	if($user->isLoggedIn()){
 		if($action == 'logout'){
 			$user->logout();
-			include 'pages/login.php';
+			include 'views/login.php';
 		}else if($action == 'print'){
 			if($page == 'nilai'){
-				include 'pages/siswa/cetak.php';
+				include 'views/siswa/cetak.php';
 			}
 		}else if($action == 'print_all'){
 			if($page == 'nilai'){
-				include 'pages/siswa/cetak-All.php';
+				include 'views/siswa/cetak-All.php';
 			}
 		}else{
 			if($page == 'siswa'){
@@ -45,9 +45,9 @@
 			}else{
 
 			}
-			include 'pages/content.php';
+			include 'views/content.php';
 		}
 	}else{
-		include 'pages/login.php';
+		include 'views/login.php';
 	}
 ?>

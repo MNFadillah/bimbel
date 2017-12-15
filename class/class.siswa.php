@@ -79,12 +79,9 @@
 			return $data;
 		}
 
-		public function get($limit = 0, $offset = 0)
-		{
+		public function getAll(){
 			try {
-				$stmt = $this->db->prepare("SELECT * FROM siswa ORDER BY created_at DESC LIMIT :limits, :offset");
-				$stmt->bindparam(':limits', $limit, PDO::PARAM_INT);
-				$stmt->bindparam(':offset', $offset, PDO::PARAM_INT);
+				$stmt = $this->db->prepare("SELECT * FROM siswa ORDER BY created_at");
 				$stmt->execute();
 				$data = array();
 				while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
@@ -97,33 +94,35 @@
 			}
 		}
 
+		public function get($limit = 0, $offset = 0)
+		{
+			try {
+				// echo $limit;
+				$stmt = $this->db->prepare("SELECT * FROM siswa ORDER BY created_at DESC LIMIT :limits, :offset");
+				$stmt->bindparam(':limits', $limit, PDO::PARAM_INT);
+				$stmt->bindparam(':offset', $offset, PDO::PARAM_INT);
+				$stmt->execute();
+				$data = array();
+				while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+				 	$data[] = $row;
+				 }
+				 // print_r($data);
+				 return $data;
+			} catch (PDOException $e) {
+				echo $e->getMessage();
+				return null;
+			}
+		}
+
 		public function list()
 		{
 			$stmt = $this->db->prepare("SELECT siswa.id id, siswa.nama nama, siswa.email email, siswa.alamat alamat, siswa.id_kelas id_kelas, kelas.keterangan keterangan, kelas.kuota kuota FROM siswa LEFT JOIN kelas ON siswa.id_kelas = kelas.id GROUP BY siswa.id");
 			$stmt->execute();
-			if($stmt->rowCount() > 0){
-				while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-					echo "
-					<tr>
-						<td>
-							<button type='button' data-toggle='modal' data-target='#addBookDialog' data-id='$row[id]' data-page='siswa' class='openDialog btn btn-primary btn-sm'><span class='glyphicon glyphicon-pencil' aria-hidden='true'></span></button>
-							<a href='?page=siswa&action=delete&id=$row[id]'><button class='btn btn-danger btn-sm'><i class='fa fa-trash'></i></button></a>
-						</td>
-						<td class='id'>$row[id]</td>
-						<td class='nama'>$row[nama]</td>
-						<td class='kelas'>$row[keterangan]</td>
-						<td class='email'>$row[email]</td>
-						<td class='alamat'>$row[alamat]</td>
-					</tr>
-					";	
-				}
-			}else{
-				echo "
-				<tr>
-				<td colspan='5' align='center'><h3>Data Kosong</h3></td>
-				</tr>
-				";
+			$data = array();
+			while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+				$data[] = $row;
 			}
+			return $data;
 		}
 
 		public function edit($id, $nama, $alamat, $email)

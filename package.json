@@ -1,0 +1,12 @@
+{
+  "name": "bimbel",
+  "version": "1.0.0",
+  "main": "index.php",
+  "repository": "https://github.com/MNFadillah/bimbel.git",
+  "author": "Mocha. N. Fadillah <mochamadfadilah88@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "axios": "^0.17.1",
+    "vue": "^2.5.9"
+  }
+}

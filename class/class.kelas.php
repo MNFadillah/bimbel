@@ -83,6 +83,24 @@
 			}
 			return $data;
 		}
+
+		public function get($limit = 0, $offset = 0)
+		{
+			try {
+				$stmt = $this->db->prepare("SELECT * FROM kelas ORDER BY created_at DESC LIMIT :limits, :offset");
+				$stmt->bindparam(':limits', $limit, PDO::PARAM_INT);
+				$stmt->bindparam(':offset', $offset, PDO::PARAM_INT);
+				$stmt->execute();
+				$data = array();
+				while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+				 	$data[] = $row;
+				 }
+				 return $data;
+			} catch (PDOException $e) {
+				echo $e->getMessage();
+				return null;
+			}
+		}
 		
 		public function getDataById($id = 0){
 			$stmt = $this->db->prepare("SELECT * FROM kelas where id = :id");
