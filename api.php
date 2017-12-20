@@ -25,8 +25,8 @@ class Api
 		include 'class/class.mapel_per_kelas.php';
 		include 'class/class.mapel.php';
 		include 'class/class.nilai.php';
-		$siswa = new Siswa();
-		$kelas = new Kelas();
+		$siswa = new Siswa;
+		$kelas = new Kelas;
 		$mapel = new Mapel;
 		$jumlahDataTiapModul = array("siswa"=>$siswa->count(), "kelas"=>$kelas->count(), "mapel"=>$mapel->count());
 		$this->res["jumlah"] = $jumlahDataTiapModul;
@@ -44,10 +44,19 @@ class Api
 			$nama 		= $_POST["nama"]; 
 			$email 		= $_POST["email"]; 
 			$alamat 	= $_POST["alamat"];
-			$id_kelas 	= $_POST["id_kelas"];
+			$id_kelas 	= $_POST["kelas"];
 
 			$insertId 	= $siswa->add($nama, $email, $alamat, $id_kelas);
 			if($insertId){
+				include 'class/class.mapel_per_kelas.php';
+				include 'class/class.nilai.php';
+				$mapel_kelas = new Mapel_per_kelas;
+				$nilai = new Nilai;
+				$dataMapelPerKelas = $mapel_kelas->getDataByKelas($id_kelas);
+				foreach ($dataMapelPerKelas as $key => $value) {
+					$nilai->add($insertId, $value['id'], 0);
+				}
+
 				$dataSiswa	= $siswa->getAll();
 
 				$this->res = array('message'=>'Siswa berhasil ditambahkan', 'status'=>true, 'siswa'=>$dataSiswa);
@@ -72,6 +81,9 @@ class Api
 
 			$deleteId = $siswa->delete($id);
 			if($deleteId){
+				include 'class/class.nilai.php';
+				$nilai = new Nilai;
+				$nilai->deleteByIdSiswa($id);
 				$dataSiswa = $siswa->getAll();
 				$this->res = array('message'=>'Siswa berhasil dihapus', 'status'=>true, 'siswa'=>$dataSiswa);
 			}else{

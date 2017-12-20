@@ -27,27 +27,11 @@
 		public function list(){
 			$stmt = $this->db->prepare("SELECT * FROM kelas");
 			$stmt->execute();
-			if($stmt->rowCount() > 0){
-				while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-					echo "
-					<tr>
-						<td>
-							<button type='button' data-toggle='modal' data-target='#addBookDialog' data-id='$row[id]' data-page='kelas' class='openDialog btn btn-primary btn-sm'><span class='glyphicon glyphicon-pencil' aria-hidden='true'></span></button>
-							<a href='?page=kelas&action=delete&id=$row[id]'><button class='btn btn-danger btn-sm'><i class='fa fa-trash'></i></button></a>
-						</td>
-						<td class='id'>$row[id]</td>
-						<td class='keterangan'>$row[keterangan]</td>
-						<td class='kuota'>$row[kuota]</td>
-					</tr>
-					";	
-				}
-			}else{
-				echo "
-				<tr>
-				<td colspan='4' align='center'><h3>Data Kosong</h3></td>
-				</tr>
-				";
+			$data = array();
+			while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+				$data[] = $row;
 			}
+			return $data;
 		}
 
 		public function edit($id, $keterangan, $kuota)
@@ -67,6 +51,8 @@
 
 		public function delete($id){
 			$stmt = $this->db->prepare("DELETE FROM kelas where id = :id");
+			$stmt->execute(array(':id'=>$id));
+			$stmt = $this->db->prepare("DELETE FROM mapel_per_kelas where id_kelas = :id");
 			$stmt->execute(array(':id'=>$id));
 			return true;
 		}

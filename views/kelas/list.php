@@ -127,7 +127,18 @@
             </thead>
             <tbody>
               <?php
-                $kelas->list();
+                $dataKelas = $kelas->list();
+                foreach ($dataKelas as $key => $row) { ?>
+                  <tr>
+                    <td>
+                      <button type='button' data-toggle='modal' data-target='#addBookDialog' data-id='<?php echo $row["id"];?>' data-page='kelas' class='openDialog btn btn-primary btn-sm'><span class='glyphicon glyphicon-pencil' aria-hidden='true'></span></button>
+                      <button class='btn btn-danger btn-sm' type="button" onclick="showAlert(<?php echo $row['id']; ?>);"><i class='fa fa-trash'></i></button>
+                    </td>
+                    <td class='id'><?php echo $row['id'];?></td>
+                    <td class='keterangan'><?php echo $row['keterangan'];?></td>
+                    <td class='kuota'><?php echo $row['kuota'];?></td>
+                  </tr>
+                <?php }
               ?>
             </tbody>
           </table>
@@ -176,6 +187,22 @@
   </div>
 </div>
 <script type="text/javascript">
+  function showAlert(id) {
+     swal({
+          title: "Hapus data",
+          text: "Anda yakin mau menghapus Kelas ini ?",
+          type: "warning",
+          showCancelButton: true,
+          confirmButtonColor: '#3085d6',
+          cancelButtonColor: '#d33',
+          confirmButtonText: 'Ya, hapus!'
+      }).then((result) => {
+          if (result.value){
+            location.href = "?page=kelas&action=delete&id=" + id;
+          }
+      });
+  }
+
   $('.openDialog').click(
   function (evt) {
     var id = $(this).attr("data-id");

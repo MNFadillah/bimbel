@@ -222,17 +222,28 @@
 			$id_kelas = (int)$id_kelas;
 			$stmt = $this->db->prepare("SELECT * FROM mapel_per_kelas where id_kelas = :id_kelas");
 			$stmt->execute(array(':id_kelas'=>$id_kelas));
-			$id_mapel = array();
-			while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-				$id_mapel[] = $row['id_mapel'];
-			}
-			$id_mapel_string = "(" . implode(',', $id_mapel) . ")";
-			$id_mapel = array();
-			try {
-				$stmt = $this->db->prepare("SELECT * FROM mapel where id NOT IN $id_mapel_string");
-				$stmt->execute();
+			$id_mapel = null;
+			if($stmt->rowCount() != 0){
+				$id_mapel = array();
 				while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-					$id_mapel[] = $row;
+					$id_mapel[] = $row['id_mapel'];
+				}
+				$id_mapel_string = "(" . implode(',', $id_mapel) . ")";
+				$id_mapel = array();
+			}
+			try {
+				if($stmt->rowCount() != 0){
+					$stmt = $this->db->prepare("SELECT * FROM mapel where id NOT IN $id_mapel_string");
+					$stmt->execute();
+					while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+						$id_mapel[] = $row;
+					}
+				}else{
+					$stmt = $this->db->prepare("SELECT * FROM mapel ");
+					$stmt->execute();
+					while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+						$id_mapel[] = $row;
+					}
 				}
 			} catch (PDOException $e) {
 				$this->errorText = $stmt->errorInfo();

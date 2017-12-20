@@ -21,31 +21,31 @@
             Tambah Siswa
           </h3>
         </div>
-        <form role="form" id="formInput" class="form-horizontal" action="" method="post">
+
+        <form id="formInput" class="form-horizontal" action="#" method="post">
           <div class="box-body border-radius-none">
             <div class="form-group">
               <label  for="inputNama" class="control-label col-md-3">Nama</label>
               <div class="col-md-8">
-                <input type="text" name="nama" class="form-control" id="inputNama" required placeholder="Masukkan Nama Siswa">
+                <input type="text" name="nama" class="form-control" id="inputNama" required placeholder="Masukkan Nama Siswa" v-model="newSiswa.nama">
               </div>
             </div>
             <div class="form-group">
               <label  for="inputEmail" class="control-label col-md-3">Email</label>
               <div class="col-md-8">
-                <input type="email" name="email" class="form-control" id="inputEmail" required placeholder="Masukkan Email Siswa">
+                <input type="email" name="email" class="form-control" id="inputEmail" required placeholder="Masukkan Email Siswa" v-model="newSiswa.email">
               </div>
             </div>
             <div class="form-group">
               <label  for="inputAlamat" class="control-label col-md-3">Alamat</label>
               <div class="col-md-8">
-                <textarea class="form-control" name="alamat" id="inputAlamat">
-                </textarea>
+                <textarea class="form-control" name="alamat" id="inputAlamat" v-model="newSiswa.alamat"></textarea>
               </div>
             </div>
             <div class="form-group">
               <label  for="inputKelas" class="control-label col-md-3">Kelas</label>
               <div class="col-md-8">
-                <select class="form-control" name="id_kelas" id="inputKelas">
+                <select class="form-control" name="id_kelas" id="inputKelas" v-model="newSiswa.kelas">
                   <?php 
                     foreach ($dataKelas as $key => $value) {
                       echo "<option value='$value[id]'>$value[keterangan]</option>'";
@@ -59,7 +59,7 @@
             <div class="row">
               <div class="col-sm-12">
                 <div class="clearfix">
-                  <button type="submit" name="btnSubmit" class="btn btn-success pull-right"><i class="fa fa-plus"></i> Tambah</button>
+                  <button @click="addSiswa();" type="button" name="btnSubmit" class="btn btn-success pull-right"><i class="fa fa-plus"></i> Tambah</button>
                 </div>
               </div>
             </div>
@@ -160,6 +160,7 @@
     data: {
       siswa          : {id:0, nama:"", kelas:"",email:"",alamat:""},
       selectedSiswa  : {},
+      newSiswa       : {nama:"", kelas:"",email:"",alamat:""},
       errorMessage   : "",
       successMessage : ""
     },
@@ -178,6 +179,30 @@
 
       selectSiswa: function(siswaSelected){
         siswaApp.selectedSiswa = JSON.parse(JSON.stringify(siswaSelected));
+      },
+
+      addSiswa: function(){
+        let formData = siswaApp.toFormData(siswaApp.newSiswa);
+        axios.post("<?php echo base_url();?>api.php?modul=siswa&fungsi=create", formData)
+        .then(function(response){
+          siswaApp.newSiswa = {};
+          if(response.data.error){
+            siswaApp.errorMessage = response.data.message;
+            swal(
+              'Gagal!',
+              'Gagal menambbah siswa!',
+              'error'
+            );
+          }else{
+            siswaApp.successMessage = response.data.message;
+            siswaApp.getSiswa();
+            swal(
+              'Berhasil!',
+              'Berhasil menambah siswa!',
+              'success'
+            );
+          }
+        });
       },
 
       updateSiswa: function(){
@@ -215,27 +240,29 @@
           cancelButtonColor: '#d33',
           confirmButtonText: 'Ya, hapus!'
         }).then((result) => {
-          let formData = siswaApp.toFormData(siswaApp.selectedSiswa);
-          axios.post("<?php echo base_url();?>api.php?modul=siswa&fungsi=delete", formData)
-          .then(function(response){
-            siswaApp.selectedSiswa = {};
-            if(response.data.error){
-              siswaApp.errorMessage = response.data.message;
-              swal(
-                'Gagal!',
-                'Oops, Gagal menghapus siswa!',
-                'error'
-              );
-            }else{
-              siswaApp.successMessage = response.data.message;
-              siswaApp.getSiswa();
-              swal(
-                'Berhasil!',
-                'Anda berhasil menghapus siswa!',
-                'success'
-              );
-            }
-          });
+          if (result.value){
+            let formData = siswaApp.toFormData(siswaApp.selectedSiswa);
+            axios.post("<?php echo base_url();?>api.php?modul=siswa&fungsi=delete", formData)
+            .then(function(response){
+              siswaApp.selectedSiswa = {};
+              if(response.data.error){
+                siswaApp.errorMessage = response.data.message;
+                swal(
+                  'Gagal!',
+                  'Oops, Gagal menghapus siswa!',
+                  'error'
+                );
+              }else{
+                siswaApp.successMessage = response.data.message;
+                siswaApp.getSiswa();
+                swal(
+                  'Berhasil!',
+                  'Anda berhasil menghapus siswa!',
+                  'success'
+                );
+              }
+            });
+          }
         });
       },
 

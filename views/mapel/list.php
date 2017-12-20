@@ -143,7 +143,18 @@
             </thead>
             <tbody>
               <?php
-                $mapel->list();
+                $dataMapel = $mapel->list();
+                foreach ($dataMapel as $key => $row) { ?>
+                  <tr>
+                    <td>
+                      <button type='button' data-toggle='modal' data-target='#addBookDialog' data-id='<?php echo $row["id"];?>' data-page='mapel' class='openDialog btn btn-primary btn-sm'><span class='glyphicon glyphicon-pencil' aria-hidden='true'></span></button>
+                      <button type="button" onclick="showAlert(<?php echo $row['id'];?>);" class='btn btn-danger btn-sm'><i class='fa fa-trash'></i></button>
+                    </td>
+                    <td class='id'><?php echo $row['id'];?></td>
+                    <td class='nama'><?php echo $row['nama'];?></td>
+                    <td class='waktu'><?php echo $row['waktu'];?></td>
+                  </tr>
+                <?php }
               ?>
             </tbody>
           </table>
@@ -205,4 +216,20 @@
     $("input#inputnamaEdit").val( nama );
     $("#inputwaktuEdit").val( waktu );
   });
+
+  function showAlert(id) {
+     swal({
+          title: "Hapus data",
+          text: "Anda yakin mau menghapus Mapel ini ?",
+          type: "warning",
+          showCancelButton: true,
+          confirmButtonColor: '#3085d6',
+          cancelButtonColor: '#d33',
+          confirmButtonText: 'Ya, hapus!'
+      }).then((result) => {
+          if (result.value){
+            location.href = "?page=mapel&action=delete&id=" + id;
+          }
+      });
+  }
 </script>
